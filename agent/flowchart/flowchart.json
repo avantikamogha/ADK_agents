@@ -1,36 +1,71 @@
 {
-  "nodes": [
-    {"id": "A", "label": "Start: Agreement Signed"},
-    {"id": "B", "label": "Initial Payment Due (50%)"},
-    {"id": "C", "label": "Client Pays Initial Payment"},
-    {"id": "D", "label": "Agreement Breach - Client (Payment)"},
-    {"id": "E", "label": "Service Provider Delivers Services (within 30 days)"},
-    {"id": "F", "label": "Services Successfully Delivered"},
-    {"id": "G", "label": "Late Delivery - Penalties Apply (Section 5)"},
-    {"id": "H", "label": "Remaining Payment Due (50%)"},
-    {"id": "I", "label": "Client Pays Remaining Payment"},
-    {"id": "J", "label": "Agreement Breach - Client (Payment)"},
-    {"id": "K", "label": "Agreement Complete"},
-    {"id": "L", "label": "Termination Possible (30 days notice - Section 4)"},
-    {"id": "M", "label": "Confidentiality Obligations Continue for 2 Years (Section 3)"},
-    {"id": "N", "label": "End"}
-  ],
-  "edges": [
-    {"source": "A", "target": "B", "label": "Initiate"},
-    {"source": "B", "target": "C", "label": "Yes"},
-    {"source": "B", "target": "D", "label": "No"},
-    {"source": "C", "target": "E", "label": "Services Start"},
-    {"source": "E", "target": "F", "label": "Yes"},
-    {"source": "E", "target": "G", "label": "No"},
-    {"source": "F", "target": "H", "label": "Payment Trigger"},
-    {"source": "H", "target": "I", "label": "Yes"},
-    {"source": "H", "target": "J", "label": "No"},
-    {"source": "I", "target": "K", "label": "Finalize"},
-    {"source": "G", "target": "K", "label": "Conclude"},
-    {"source": "D", "target": "L", "label": "Breach"},
-    {"source": "J", "target": "L", "label": "Breach"},
-    {"source": "L", "target": "K", "label": "Terminate"},
-    {"source": "K", "target": "M", "label": "Post-Agreement"},
-    {"source": "M", "target": "N", "label": "Complete"}
+  "document_overview": {
+    "parties": "San Diego County Water Authority and the Contractor",
+    "scope_of_work": "Defined in Attachment A",
+    "payment_terms": "Lump sum, hourly rates, and maximum payments (see clause 3 and attachments). Potential expenses up to $40,000 related to key loss/replacement (Clause 24).",
+    "key_obligations": [
+      "Comply with SCOOP program and immigration laws.",
+      "Maintain confidentiality.",
+      "Defend and indemnify the Water Authority.",
+      "Maintain required insurance coverage (general liability: $2,000,000 aggregate / $1,000,000 per occurrence; auto and professional liability: $1,000,000)."
+    ],
+    "risks": [
+      "Potential for delays due to unforeseen circumstances (war, riots, natural disasters).",
+      "Exposure to liability due to errors, omissions, or negligence.",
+      "Virus/cybersecurity issues affecting electronic communications.",
+      "Contractor's responsibility to update its system with software vendor's most current releases at regular intervals to prevent issues raised by viruses."
+    ],
+    "termination": "The Water Authority can terminate the contract with ten (10) days written notice.",
+    "governing_law": "The contract is governed by the laws of the State of California, and venue is in San Diego County."
+  },
+  "clause_overview": [
+    {
+      "clause_number": 1,
+      "clause_title": "Scope of Services",
+      "summary": "The contractor's scope of services is detailed in Attachment A.",
+      "risk": "No specific risks identified for this clause."
+    },
+    {
+      "clause_number": 2,
+      "clause_title": "Record Keeping",
+      "summary": "The contractor must keep accurate records related to invoices for at least four years from the final payment date.",
+      "risk": "Failure to maintain accurate records could lead to disputes over payments and potential legal issues."
+    },
+    {
+      "clause_number": 3,
+      "clause_title": "Assignment",
+      "summary": "The contractor cannot assign this contract without the Water Authority's express written consent.",
+      "risk": "Unauthorized assignment could result in breach of contract."
+    },
+    {
+      "clause_number": 4,
+      "clause_title": "Subcontractors & SCOOP Compliance",
+      "summary": "The contractor must follow the Small Contractor Outreach and Opportunities Program (SCOOP) requirements and pay subcontractors within ten (10) days of receiving payment from the Water Authority.",
+      "risk": "Failure to comply with SCOOP could result in withholding of payments, suspension, debarment, or termination of the contract."
+    },
+    {
+      "clause_number": 5,
+      "clause_title": "Immigration Law Compliance",
+      "summary": "The contractor must adhere to the Immigration Reform and Control Act of 1986, including verifying employee eligibility.",
+      "risk": "Non-compliance with immigration laws can lead to legal penalties and contract termination."
+    },
+    {
+      "clause_number": 6,
+      "clause_title": "Civil Rights Compliance",
+      "summary": "The contractor is required to comply with various civil rights laws and programs, including Title VII, the California Fair Employment Practices Act, and the Americans with Disabilities Act.",
+      "risk": "Failure to comply can lead to lawsuits, penalties, and termination of the contract."
+    },
+    {
+      "clause_number": 7,
+      "clause_title": "Confidentiality",
+      "summary": "The contractor is obligated to keep Water Authority information confidential.",
+      "risk": "Breach of confidentiality could result in legal action and contract termination."
+    },
+    {
+      "clause_number": 8,
+      "clause_title": "Governing Law & Venue",
+      "summary": "California law governs the contract, and any related legal actions must occur in San Diego County.",
+      "risk": "This clause dictates where legal disputes must be resolved, which may impact costs and convenience."
+    }
   ]
 }

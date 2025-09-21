@@ -1,80 +1,72 @@
 import json
-import uuid
 from google.adk.agents import Agent
-from google.adk.sessions import InMemorySessionService
 
 GEMINI_MODEL = "gemini-2.0-flash"
 
-# --- Utility function to generate unique node IDs ---
-def generate_node_id():
-    return str(uuid.uuid4())[:8]
-
-# --- Function to convert structured JSON to flowchart JSON ---
-def create_visual_json(input_json):
-    visual_json = {"nodes": [], "edges": []}
-
-    # --- Add summary node ---
-    summary_id = generate_node_id()
-    visual_json["nodes"].append({
-        "id": summary_id,
-        "label": input_json.get("document_summary", "Document Summary"),
-        "type": "summary",
-        "color": "lightblue",
-        "shape": "box"
-    })
-
-    # --- Add clause nodes with risk-based colors ---
-    clause_ids = {}
-    for clause in input_json.get("clauses", []):
-        node_id = generate_node_id()
-        clause_ids[clause["clause_id"]] = node_id
-
-        risk_text = clause.get("risk", "").lower()
-        if "high" in risk_text:
-            color = "red"
-        elif "medium" in risk_text:
-            color = "orange"
-        else:
-            color = "green"
-
-        visual_json["nodes"].append({
-            "id": node_id,
-            "label": f'{clause["clause_id"]}: {clause.get("summary", "")}',
-            "type": "clause",
-            "color": color,
-            "shape": "ellipse",
-            "tooltip": f"Summary: {clause.get('summary','')}\nRisk: {clause.get('risk','')}"
-        })
-
-    # --- Connect summary node to the first clause ---
-    sorted_clauses = input_json.get("clauses", [])
-    if sorted_clauses:
-        first_clause_id = clause_ids[sorted_clauses[0]["clause_id"]]
-        visual_json["edges"].append({
-            "from": summary_id,
-            "to": first_clause_id,
-            "relationship": "summary_of"
-        })
-
-    # --- Add sequential edges between clauses ---
-    for i in range(len(sorted_clauses)-1):
-        visual_json["edges"].append({
-            "from": clause_ids[sorted_clauses[i]["clause_id"]],
-            "to": clause_ids[sorted_clauses[i+1]["clause_id"]],
-            "relationship": "follows"
-        })
-
-    return visual_json
-
-# --- Visualization Sub-Agent ---
+# --- Visualization Agent that rewrites/summarizes and outputs JSON ---
 visualization_agent = Agent(
     name="visualization_agent",
     model=GEMINI_MODEL,
     instruction="""
-    You are a sub-agent that receives structured clause JSON and produces
-    a flowchart-ready JSON with nodes and edges. Do NOT chat or explain.
-    """,
-    description="Generates flowchart JSON from structured clauses.",
-    session_service=InMemorySessionService(),
-    on_message=create_visual_json
+You are a Visualization AI.
+
+Input: a JSON object with keys:
+  - document_summary (string)
+  - clauses (array of objects, each with clause_id, summary, risk, etc.)
+
+Task:
+1. Rewrite or creatively summarize each clause summary so it's concise and easy to display.
+2. Output ONLY valid JSON (no markdown, no code fences, no Mermaid) of this exact structure:
+
+{
+  "nodes": [
+    {
+      "id": "string",         // unique ID for each node
+      "label": "string",      // short label for graph
+      "summary": "string",    // your rewritten clause summary
+      "risk": "string"        // e.g. high / medium / low or descriptive text
+    }
+  ],
+  "edges": [
+    {
+      "from": "string",       // source node id
+      "to": "string",         // target node id
+      "relationship": "string"// e.g. follows / summary_of
+    }
+  ]
+}
+
+Important:
+- Do not include any extra text outside the JSON.
+- Ensure the JSON parses with json.loads in Python.
+"""
 )
+
+# --- Example usage ---
+if __name__ == "__main__":
+    # This is the structured JSON you already have from the structuring agent
+    structured_json = {
+        "document_summary": "Service agreement between client and vendor.",
+        "clauses": [
+            {
+                "clause_id": "C1",
+                "summary": "Vendor must deliver software within 30 days.",
+                "risk": "High risk of delay"
+            },
+            {
+                "clause_id": "C2",
+                "summary": "Client provides required data access.",
+                "risk": "Low"
+            }
+        ]
+    }
+
+    # Ask the visualization agent to rewrite and output flowchart JSON
+    raw_output = visualization_agent.run(structured_json)
+
+    # Parse to ensure it’s valid JSON
+    try:
+        visual_json = json.loads(raw_output)
+        print(json.dumps(visual_json, indent=2))
+    except json.JSONDecodeError:
+        raise ValueError("Visualization agent did not return valid JSON:\n" + raw_output)
